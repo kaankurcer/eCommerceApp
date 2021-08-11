@@ -79,7 +79,7 @@ namespace eCommerceApp.Controllers
         }
 
         [HttpPost("add-product")]
-        public async Task<ActionResult<bool>> Register(ProductDto productDto)
+        public async Task<ActionResult<bool>> AddProduct(ProductDto productDto)
         {
             SqlConnection myConnection = new SqlConnection();
             myConnection.ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=eCommerceDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
