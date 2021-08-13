@@ -13,21 +13,22 @@ namespace eCommerceApp.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<bool>> Register(UserDto userDto)
         {
+            //Check if the user with the given username already exists or not
             if (await UserExists(userDto.Username)) return BadRequest("Username is taken");
 
-            SqlConnection myConnection = new SqlConnection();
-            myConnection.ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=eCommerceDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            SqlConnection databaseConnection = new SqlConnection();
+            databaseConnection.ConnectionString = connectionString;
 
             SqlCommand sqlCmd = new SqlCommand();
             sqlCmd.CommandType = CommandType.Text;
             sqlCmd.CommandText = "INSERT INTO Users (Username, Password) VALUES (@Username, @Password)";
-            sqlCmd.Connection = myConnection;
+            sqlCmd.Connection = databaseConnection;
 
             sqlCmd.Parameters.AddWithValue("@Username", userDto.Username);
             sqlCmd.Parameters.AddWithValue("@Password", userDto.Password);
-            myConnection.Open();
+            databaseConnection.Open();
             int rowInserted = sqlCmd.ExecuteNonQuery();
-            myConnection.Close();
+            databaseConnection.Close();
             return true;
         }
     
@@ -35,14 +36,13 @@ namespace eCommerceApp.Controllers
         public async Task<ActionResult<User>> Login(UserDto userDto)
         {
             SqlDataReader reader = null;
-            SqlConnection myConnection = new SqlConnection();
-            myConnection.ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=eCommerceDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-
+            SqlConnection databaseConnection = new SqlConnection();
+            databaseConnection.ConnectionString = connectionString;
             SqlCommand sqlCmd = new SqlCommand();
             sqlCmd.CommandType = CommandType.Text;
             sqlCmd.CommandText = "SELECT * FROM Users WHERE Username='" + userDto.Username + "'";
-            sqlCmd.Connection = myConnection;
-            myConnection.Open();
+            sqlCmd.Connection = databaseConnection;
+            databaseConnection.Open();
             reader = sqlCmd.ExecuteReader();
             User user = null;
             while (reader.Read())
@@ -60,14 +60,14 @@ namespace eCommerceApp.Controllers
         private async Task<bool> UserExists(string username)
         {
             SqlDataReader reader = null;
-            SqlConnection myConnection = new SqlConnection();
-            myConnection.ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=eCommerceDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            SqlConnection databaseConnection = new SqlConnection();
+            databaseConnection.ConnectionString = connectionString;
 
             SqlCommand sqlCmd = new SqlCommand();
             sqlCmd.CommandType = CommandType.Text;
             sqlCmd.CommandText = "SELECT * FROM Users WHERE Username='" + username + "'";
-            sqlCmd.Connection = myConnection;
-            myConnection.Open();
+            sqlCmd.Connection = databaseConnection;
+            databaseConnection.Open();
             reader = sqlCmd.ExecuteReader();
             while (reader.Read())
             {
